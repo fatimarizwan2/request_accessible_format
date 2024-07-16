@@ -55,7 +55,7 @@ app.component('prmBriefResultAfter', {
                </a>
              </div>`
 });
-  
+
 // Controller for prmBriefResultAfter component
 app.controller('accessReqFormController', function($scope, $rootScope) {
   this.$onInit = function() {
@@ -86,20 +86,57 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
       resource_author = this.parentCtrl.item.pnx.addata.au[0]; // Retrieve the resource author from au
     }
 
+    /****************************************
+      Get the "Resource Type"
+    ****************************************/
+    var resource_type = this.parentCtrl.item.pnx.display.type ? this.parentCtrl.item.pnx.display.type[0] : '';
+
+    /****************************************
+      Get the "Publisher"
+    ****************************************/
+    var publisher = this.parentCtrl.item.pnx.addata.pub ? this.parentCtrl.item.pnx.addata.pub[0] : '';
+
+    /****************************************
+      Get the "Publication Date"
+    ****************************************/
+    var publication_dat = '';
+    if (this.parentCtrl.item.pnx.addata.date !== undefined) {
+      publication_dat = this.parentCtrl.item.pnx.addata.date[0]; // Retrieve the publication date from date
+    } else if (this.parentCtrl.item.pnx.display.creationdate !== undefined) {
+      publication_dat = this.parentCtrl.item.pnx.display.creationdate[0]; // Retrieve the publication date from creationdate
+    }
+
+    /****************************************
+      Get the "ISBN or ISSN"
+    ****************************************/
+    var isbn_or_issn = '';
+    if (this.parentCtrl.item.pnx.addata.isbn !== undefined) {
+      isbn_or_issn = this.parentCtrl.item.pnx.addata.isbn[0]; // Retrieve ISBN
+    } else if (this.parentCtrl.item.pnx.addata.issn !== undefined) {
+      isbn_or_issn = this.parentCtrl.item.pnx.addata.issn[0]; // Retrieve ISSN
+    }
+
     // Function to determine whether to show the accessible link
     this.ShowAccessibleLink = function() {
       var recordType = this.parentCtrl.item.pnx.display.type ? this.parentCtrl.item.pnx.display.type[0] : ''; // Get the record type
       var mainLocation = this.parentCtrl.item.delivery && this.parentCtrl.item.delivery.bestlocation ? this.parentCtrl.item.delivery.bestlocation.mainLocation : ''; // Get the main location
+     // edit this if you want the link to show for all resource types (vid, news, journals) 
       return (recordType == 'book' || recordType == 'article') && mainLocation !== 'Bertrand Russell Archives' && mainLocation !== 'Archives and Research Collections'; // Determine if the link should be shown
     };
+    // 
 
     // Function to open the accessibility request form on click
     this.showAccessibleCopyFormOnClick = function($event) {
       var formUrl = 'https://uregina.libwizard.com/f/accessibility_request?' +
         'resource_title-=' + encodeURIComponent(resource_title) + // Add the resource title to the form URL
         '&author-=' + encodeURIComponent(resource_author) + // Add the resource author to the form URL
+        '&resource_type-=' + encodeURIComponent(resource_type) + // Add the resource type to the form URL
+        '&publisher-=' + encodeURIComponent(publisher) + // Add the publisher to the form URL
+        '&publication_dat-=' + encodeURIComponent(publication_dat) + // Add the publication date to the form URL
+        '&isbn_or_issn-=' + encodeURIComponent(isbn_or_issn) + // Add the ISBN or ISSN to the form URL
+        '&volume-=' + encodeURIComponent(volume) + // Add the volume to the form URL
         '&resource_link-=' + encodeURIComponent(current_page_url); // Add the current page URL to the form URL
-      console.log("Generated Form URL: ", formUrl);  // Debugging 
+      console.log("Generated Form URL: ", formUrl);  // Debugging line
       window.open(formUrl, '_blank'); // Open the form in a new tab
     };
 
@@ -109,15 +146,21 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
         var formUrl = 'https://uregina.libwizard.com/f/accessibility_request?' +
           'resource_title-=' + encodeURIComponent(resource_title) + // Add the resource title to the form URL
           '&author-=' + encodeURIComponent(resource_author) + // Add the resource author to the form URL
+          '&resource_type-=' + encodeURIComponent(resource_type) + // Add the resource type to the form URL
+          '&publisher-=' + encodeURIComponent(publisher) + // Add the publisher to the form URL
+          '&publication_dat-=' + encodeURIComponent(publication_dat) + // Add the publication date to the form URL
+          '&isbn_or_issn-=' + encodeURIComponent(isbn_or_issn) + // Add the ISBN or ISSN to the form URL
+          '&volume-=' + encodeURIComponent(volume) + // Add the volume to the form URL
           '&resource_link-=' + encodeURIComponent(current_page_url); // Add the current page URL to the form URL
-        console.log("Generated Form URL: ", formUrl);  // Debugging 
+        console.log("Generated Form URL: ", formUrl);  // Debugging line
         window.open(formUrl, '_blank'); // Open the form in a new tab
       }
-    };  
+    };
   };
 });
 
 /* ---------- End: "Request Accessibility Copy" link code for top record section ----------*/
+
 
 /* *******************************************************************
 *  SET LIBRARY ALERT MESSAGE FOR PRIMO
