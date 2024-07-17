@@ -20,7 +20,7 @@
 
 /* ---------- Begin: "Request an Accessible Format" link code based off of the University of Manitoba's code ----------*/
 
-// Define the prmAuthenticationAfter component
+  // Define the prmAuthenticationAfter component
 app.component('prmAuthenticationAfter', {
   bindings: {parentCtrl: '<'},
   controller: 'prmAuthenticationAfterController'
@@ -70,7 +70,7 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
       Get the "Resource Title"
     ****************************************/
     var resource_title = this.parentCtrl.item.pnx.display.title[0]; // Retrieve the resource title
-   
+
     /****************************************
       Attach the URL to the Resource Title
     ****************************************/
@@ -99,12 +99,16 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
     /****************************************
       Get the "Publication Date"
     ****************************************/
-    var publication_dat = '';
-    if (this.parentCtrl.item.pnx.addata.date !== undefined) {
-      publication_dat = this.parentCtrl.item.pnx.addata.date[0]; // Retrieve the publication date from date
-    } else if (this.parentCtrl.item.pnx.display.creationdate !== undefined) {
-      publication_dat = this.parentCtrl.item.pnx.display.creationdate[0]; // Retrieve the publication date from creationdate
-    }
+  var date = '';
+  if (this.parentCtrl.item.pnx.addata.date !== undefined) {
+    date = this.parentCtrl.item.pnx.addata.date[0]; // Retrieve the publication date from date
+  } else {
+    console.log("Publication Date not found in addata.date.");
+  }
+  
+  // Debugging: Log the retrieved values
+  console.log("Publication Date: ", date);
+
 
     /****************************************
       Get the "ISBN or ISSN"
@@ -120,10 +124,9 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
     this.ShowAccessibleLink = function() {
       var recordType = this.parentCtrl.item.pnx.display.type ? this.parentCtrl.item.pnx.display.type[0] : ''; // Get the record type
       var mainLocation = this.parentCtrl.item.delivery && this.parentCtrl.item.delivery.bestlocation ? this.parentCtrl.item.delivery.bestlocation.mainLocation : ''; // Get the main location
-     // edit this if you want the link to show for all resource types (vid, news, journals) 
+      // Edit this if you want the link to show for all resource types (vid, news, journals)
       return (recordType == 'book' || recordType == 'article') && mainLocation !== 'Bertrand Russell Archives' && mainLocation !== 'Archives and Research Collections'; // Determine if the link should be shown
     };
-    // 
 
     // Function to open the accessibility request form on click
     this.showAccessibleCopyFormOnClick = function($event) {
@@ -132,9 +135,8 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
         '&author-=' + encodeURIComponent(resource_author) + // Add the resource author to the form URL
         '&resource_type-=' + encodeURIComponent(resource_type) + // Add the resource type to the form URL
         '&publisher-=' + encodeURIComponent(publisher) + // Add the publisher to the form URL
-        '&publication_dat-=' + encodeURIComponent(publication_dat) + // Add the publication date to the form URL
+        '&date-=' + encodeURIComponent(date) + // Add the publication date to the form URL
         '&isbn_or_issn-=' + encodeURIComponent(isbn_or_issn) + // Add the ISBN or ISSN to the form URL
-        '&volume-=' + encodeURIComponent(volume) + // Add the volume to the form URL
         '&resource_link-=' + encodeURIComponent(current_page_url); // Add the current page URL to the form URL
       console.log("Generated Form URL: ", formUrl);  // Debugging line
       window.open(formUrl, '_blank'); // Open the form in a new tab
@@ -148,9 +150,8 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
           '&author-=' + encodeURIComponent(resource_author) + // Add the resource author to the form URL
           '&resource_type-=' + encodeURIComponent(resource_type) + // Add the resource type to the form URL
           '&publisher-=' + encodeURIComponent(publisher) + // Add the publisher to the form URL
-          '&publication_dat-=' + encodeURIComponent(publication_dat) + // Add the publication date to the form URL
+          '&date-=' + encodeURIComponent(date) + // Add the publication date to the form URL
           '&isbn_or_issn-=' + encodeURIComponent(isbn_or_issn) + // Add the ISBN or ISSN to the form URL
-          '&volume-=' + encodeURIComponent(volume) + // Add the volume to the form URL
           '&resource_link-=' + encodeURIComponent(current_page_url); // Add the current page URL to the form URL
         console.log("Generated Form URL: ", formUrl);  // Debugging line
         window.open(formUrl, '_blank'); // Open the form in a new tab
@@ -159,7 +160,7 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
   };
 });
 
-/* ---------- End: "Request Accessibility Copy" link code for top record section ----------*/
+/* ---------- End: "Request Accessibility Copy" link code for top record section ----------*/ 
 
 
 /* *******************************************************************
