@@ -20,9 +20,9 @@
 
 /* ---------- Begin: "Request an Accessible Format" link code based off of the University of Manitoba's code ----------*/
 
-  // Define the prmAuthenticationAfter component
+// Define the prmAuthenticationAfter component
 app.component('prmAuthenticationAfter', {
-  bindings: {parentCtrl: '<'},
+  bindings: { parentCtrl: '<' },
   controller: 'prmAuthenticationAfterController'
 });
 
@@ -31,7 +31,7 @@ app.controller('prmAuthenticationAfterController', function($scope, $rootScope) 
   this.$onInit = function() {
     var isLoggedIn = this.parentCtrl.isLoggedIn; // Check if the user is logged in
     $rootScope.isLoggedIn = isLoggedIn;
-    if (isLoggedIn == true) {
+    if (isLoggedIn) {
       var selector = '.user-name'; // Selector for the user's name element
       var user_name = '';
       get_element(selector, function(callback) {
@@ -72,11 +72,6 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
     var resource_title = this.parentCtrl.item.pnx.display.title[0]; // Retrieve the resource title
 
     /****************************************
-      Attach the URL to the Resource Title
-    ****************************************/
-    var resource_title = '<a href="' + current_page_url + '" target="_blank">' + resource_title + '</a>'; // Create a hyperlink for the resource title
-
-    /****************************************
       Get the "Resource Author"
     ****************************************/
     var resource_author = '';
@@ -99,16 +94,12 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
     /****************************************
       Get the "Publication Date"
     ****************************************/
-  var date = '';
-  if (this.parentCtrl.item.pnx.addata.date !== undefined) {
-    date = this.parentCtrl.item.pnx.addata.date[0]; // Retrieve the publication date from date
-  } else {
-    console.log("Publication Date not found in addata.date.");
-  }
-  
-  // Debugging: Log the retrieved values
-  console.log("Publication Date: ", date);
-
+    var date = '';
+    if (this.parentCtrl.item.pnx.addata.date !== undefined) {
+      date = this.parentCtrl.item.pnx.addata.date[0]; // Retrieve the publication date from date
+    } else {
+      console.log("Publication Date not found in addata.date.");
+    }
 
     /****************************************
       Get the "ISBN or ISSN"
@@ -120,16 +111,41 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
       isbn_or_issn = this.parentCtrl.item.pnx.addata.issn[0]; // Retrieve ISSN
     }
 
-    // Function to determine whether to show the accessible link
-    this.ShowAccessibleLink = function() {
-      var recordType = this.parentCtrl.item.pnx.display.type ? this.parentCtrl.item.pnx.display.type[0] : ''; // Get the record type
-      var mainLocation = this.parentCtrl.item.delivery && this.parentCtrl.item.delivery.bestlocation ? this.parentCtrl.item.delivery.bestlocation.mainLocation : ''; // Get the main location
-      // Edit this if you want the link to show for all resource types (vid, news, journals)
-      return (recordType == 'book' || recordType == 'article') && mainLocation !== 'Bertrand Russell Archives' && mainLocation !== 'Archives and Research Collections'; // Determine if the link should be shown
-    };
+    /****************************************
+      Get the "DOI"
+    ****************************************/
+    var doi = '';
+    if (this.parentCtrl.item.pnx.addata.doi !== undefined) {
+      doi = this.parentCtrl.item.pnx.addata.doi[0]; // Retrieve DOI
+    }
+
+    /****************************************
+      Get the "Book Chapter"
+    ****************************************/
+    var book_chapter = '';
+    if (this.parentCtrl.item.pnx.addata.btitle !== undefined) {
+      book_chapter = this.parentCtrl.item.pnx.addata.btitle[0]; // Retrieve Book Chapter
+    }
+
+    /****************************************
+      Get the "Volume"
+    ****************************************/
+    var volume = '';
+    if (this.parentCtrl.item.pnx.addata.volume !== undefined) {
+      volume = this.parentCtrl.item.pnx.addata.volume[0]; // Retrieve Volume
+    }
+
+  // Function to determine whether to show the accessible link
+  this.ShowAccessibleLink = function() {
+    var recordType = this.parentCtrl.item.pnx.display.type ? this.parentCtrl.item.pnx.display.type[0] : ''; // Get the record type
+    var mainLocation = this.parentCtrl.item.delivery && this.parentCtrl.item.delivery.bestlocation ? this.parentCtrl.item.delivery.bestlocation.mainLocation : ''; // Get the main location
+    // Edit this if you want the link to show for all resource types (vid, news, journals)
+    return (recordType == 'book' || recordType == 'article' || recordType == 'book_chapter') && mainLocation !== 'Bertrand Russell Archives' && mainLocation !== 'Archives and Research Collections'; // Determine if the link should be shown
+  };
 
     // Function to open the accessibility request form on click
     this.showAccessibleCopyFormOnClick = function($event) {
+      $event.preventDefault(); // Prevent the default action of the click event
       var formUrl = 'https://uregina.libwizard.com/f/accessibility_request?' +
         'resource_title-=' + encodeURIComponent(resource_title) + // Add the resource title to the form URL
         '&author-=' + encodeURIComponent(resource_author) + // Add the resource author to the form URL
@@ -137,6 +153,9 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
         '&publisher-=' + encodeURIComponent(publisher) + // Add the publisher to the form URL
         '&date-=' + encodeURIComponent(date) + // Add the publication date to the form URL
         '&isbn_or_issn-=' + encodeURIComponent(isbn_or_issn) + // Add the ISBN or ISSN to the form URL
+        '&doi-=' + encodeURIComponent(doi) + // Add the DOI to the form URL
+        '&book_chapter-=' + encodeURIComponent(book_chapter) + // Add the Book Chapter to the form URL
+        '&volume-=' + encodeURIComponent(volume) + // Add the Volume to the form URL
         '&resource_link-=' + encodeURIComponent(current_page_url); // Add the current page URL to the form URL
       console.log("Generated Form URL: ", formUrl);  // Debugging line
       window.open(formUrl, '_blank'); // Open the form in a new tab
@@ -145,6 +164,7 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
     // Function to open the accessibility request form on Enter key press
     $scope.showAccessibleCopyFormOnEnter = function($event) {
       if ($event.key == "Enter") {
+        $event.preventDefault(); // Prevent the default action of the key press event
         var formUrl = 'https://uregina.libwizard.com/f/accessibility_request?' +
           'resource_title-=' + encodeURIComponent(resource_title) + // Add the resource title to the form URL
           '&author-=' + encodeURIComponent(resource_author) + // Add the resource author to the form URL
@@ -152,6 +172,9 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
           '&publisher-=' + encodeURIComponent(publisher) + // Add the publisher to the form URL
           '&date-=' + encodeURIComponent(date) + // Add the publication date to the form URL
           '&isbn_or_issn-=' + encodeURIComponent(isbn_or_issn) + // Add the ISBN or ISSN to the form URL
+          '&doi-=' + encodeURIComponent(doi) + // Add the DOI to the form URL
+          '&book_chapter-=' + encodeURIComponent(book_chapter) + // Add the Book Chapter to the form URL
+          '&volume-=' + encodeURIComponent(volume) + // Add the Volume to the form URL
           '&resource_link-=' + encodeURIComponent(current_page_url); // Add the current page URL to the form URL
         console.log("Generated Form URL: ", formUrl);  // Debugging line
         window.open(formUrl, '_blank'); // Open the form in a new tab
@@ -160,7 +183,7 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
   };
 });
 
-/* ---------- End: "Request Accessibility Copy" link code for top record section ----------*/ 
+/* ---------- End: "Request Accessibility Copy" link code for top record section ----------*/
 
 
 /* *******************************************************************
