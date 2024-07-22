@@ -141,6 +141,9 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
     var mainLocation = this.parentCtrl.item.delivery && this.parentCtrl.item.delivery.bestlocation ? this.parentCtrl.item.delivery.bestlocation.mainLocation : ''; // Get the main location
     // Edit this if you want the link to show for all resource types (vid, news, journals)
     return (recordType == 'book' || recordType == 'article' || recordType == 'book_chapter') && mainLocation !== 'Bertrand Russell Archives' && mainLocation !== 'Archives and Research Collections'; // Determine if the link should be shown
+  // comment out line above and uncomment line below if you want the feature to show up for nournals and newspaper articles too:
+ //  return (recordType == 'book' || recordType == 'article' || recordType == 'book_chapter' || recordType == 'journal' || recordType == 'newspaper_article') && mainLocation !== 'Bertrand Russell Archives' && mainLocation !== 'Archives and Research Collections'; // Determine if the link should be shown
+
   };
 
     // Function to open the accessibility request form on click
