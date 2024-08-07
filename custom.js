@@ -120,7 +120,7 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
     }
 
     /****************************************
-      Get the "Book Chapter"
+      Get the "Book Chapter" 
     ****************************************/
     var book_chapter = '';
     if (this.parentCtrl.item.pnx.addata.btitle !== undefined) {
@@ -135,15 +135,22 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
       volume = this.parentCtrl.item.pnx.addata.volume[0]; // Retrieve Volume
     }
 
+    /****************************************
+      Get the "MMS ID"
+    ****************************************/
+    var mms_id = '';
+    if (this.parentCtrl.item.pnx.control.recordid !== undefined) {
+      mms_id = this.parentCtrl.item.pnx.control.recordid[0]; // Retrieve MMS ID
+    }
+    
   // Function to determine whether to show the accessible link
   this.ShowAccessibleLink = function() {
     var recordType = this.parentCtrl.item.pnx.display.type ? this.parentCtrl.item.pnx.display.type[0] : ''; // Get the record type
     var mainLocation = this.parentCtrl.item.delivery && this.parentCtrl.item.delivery.bestlocation ? this.parentCtrl.item.delivery.bestlocation.mainLocation : ''; // Get the main location
     // Edit this if you want the link to show for all resource types (vid, news, journals)
     return (recordType == 'book' || recordType == 'article' || recordType == 'book_chapter') && mainLocation !== 'Bertrand Russell Archives' && mainLocation !== 'Archives and Research Collections'; // Determine if the link should be shown
-  // comment out line above and uncomment line below if you want the feature to show up for nournals and newspaper articles too:
+  // comment out line above and uncomment line below if you want the feature to show up for journals and newspaper articles too:
  //  return (recordType == 'book' || recordType == 'article' || recordType == 'book_chapter' || recordType == 'journal' || recordType == 'newspaper_article') && mainLocation !== 'Bertrand Russell Archives' && mainLocation !== 'Archives and Research Collections'; // Determine if the link should be shown
-
   };
 
     // Function to open the accessibility request form on click
@@ -159,6 +166,7 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
         '&doi-=' + encodeURIComponent(doi) + // Add the DOI to the form URL
         '&book_chapter-=' + encodeURIComponent(book_chapter) + // Add the Book Chapter to the form URL
         '&volume-=' + encodeURIComponent(volume) + // Add the Volume to the form URL
+        '&mms_id-=' + encodeURIComponent(mms_id) + // Add the MMS ID to the form URL
         '&resource_link-=' + encodeURIComponent(current_page_url); // Add the current page URL to the form URL
       console.log("Generated Form URL: ", formUrl);  // Debugging line
       window.open(formUrl, '_blank'); // Open the form in a new tab
@@ -178,6 +186,7 @@ app.controller('accessReqFormController', function($scope, $rootScope) {
           '&doi-=' + encodeURIComponent(doi) + // Add the DOI to the form URL
           '&book_chapter-=' + encodeURIComponent(book_chapter) + // Add the Book Chapter to the form URL
           '&volume-=' + encodeURIComponent(volume) + // Add the Volume to the form URL
+          '&mms_id-=' + encodeURIComponent(mms_id) + // Add the MMS ID to the form URL
           '&resource_link-=' + encodeURIComponent(current_page_url); // Add the current page URL to the form URL
         console.log("Generated Form URL: ", formUrl);  // Debugging line
         window.open(formUrl, '_blank'); // Open the form in a new tab
